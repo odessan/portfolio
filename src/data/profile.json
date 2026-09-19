@@ -11,14 +11,26 @@
     "years": "[2014-2018]"
   },
   "tools": [
-    { "slug": "typescript", "name": "TypeScript" },
-    { "slug": "rust", "name": "Rust" },
-    { "slug": "go", "name": "Go" },
-    { "slug": "postgresql", "name": "PostgreSQL" },
-    { "slug": "react", "name": "React" },
-    { "slug": "astro", "name": "Astro" },
-    { "slug": "figma", "name": "Figma" },
-    { "slug": "git", "name": "Git" }
+    {
+      "slug": "typescript",
+      "name": "TypeScript"
+    },
+    {
+      "slug": "react",
+      "name": "React"
+    },
+    {
+      "slug": "tailwindcss",
+      "name": "Tailwind CSS"
+    },
+    {
+      "slug": "shadcnui",
+      "name": "shadcn/ui"
+    },
+    {
+      "slug": "flutter",
+      "name": "Flutter"
+    }
   ],
   "skills": [
     "Distributed systems",
@@ -30,8 +42,17 @@
   ],
   "email": "you@example.com",
   "socials": [
-    { "label": "GitHub", "href": "https://github.com/" },
-    { "label": "Read.cv", "href": "https://read.cv/" },
-    { "label": "Bluesky", "href": "https://bsky.app/" }
+    {
+      "label": "GitHub",
+      "href": "https://github.com/"
+    },
+    {
+      "label": "Read.cv",
+      "href": "https://read.cv/"
+    },
+    {
+      "label": "Bluesky",
+      "href": "https://bsky.app/"
+    }
   ]
 }
