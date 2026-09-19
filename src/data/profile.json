@@ -1,0 +1,37 @@
+{
+  "name": "Edo Wijaya",
+  "yearLine": "Portfolio",
+  "role": "Software engineer",
+  "mission": "Make complex systems legible.",
+  "status": "Open to what's next.",
+  "greeting": "Hi, I'm Edo. Let's play.",
+  "training": {
+    "degree": "[Your degree]",
+    "school": "[University]",
+    "years": "[2014-2018]"
+  },
+  "tools": [
+    { "slug": "typescript", "name": "TypeScript" },
+    { "slug": "rust", "name": "Rust" },
+    { "slug": "go", "name": "Go" },
+    { "slug": "postgresql", "name": "PostgreSQL" },
+    { "slug": "react", "name": "React" },
+    { "slug": "astro", "name": "Astro" },
+    { "slug": "figma", "name": "Figma" },
+    { "slug": "git", "name": "Git" }
+  ],
+  "skills": [
+    "Distributed systems",
+    "Observability",
+    "Developer tools",
+    "Interface engineering",
+    "Performance",
+    "Data visualization"
+  ],
+  "email": "you@example.com",
+  "socials": [
+    { "label": "GitHub", "href": "https://github.com/" },
+    { "label": "Read.cv", "href": "https://read.cv/" },
+    { "label": "Bluesky", "href": "https://bsky.app/" }
+  ]
+}

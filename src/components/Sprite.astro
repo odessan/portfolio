@@ -1,0 +1,30 @@
+---
+import { sprite, type SpriteName } from '../lib/sprites';
+
+interface Props {
+  name: SpriteName;
+  class?: string;
+  /** Accessible name. Omit for decorative sprites (the default). */
+  label?: string;
+  /** Swap palette keys, e.g. `{ y: '#0b0a14' }` for a dark arrow. */
+  recolor?: Record<string, string>;
+  style?: string;
+}
+
+const { name, class: className, label, recolor, style = '' } = Astro.props;
+const { w, h, rects } = sprite(name, recolor);
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  class:list={['sprite', className]}
+  viewBox={`0 0 ${w} ${h}`}
+  style={`--w:${w};--h:${h};${style}`}
+  shape-rendering="crispEdges"
+  focusable="false"
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+>
+  {rects.map((r) => <rect x={r.x} y={r.y} width={r.w} height="1" fill={r.fill} />)}
+</svg>

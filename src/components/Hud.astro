@@ -1,0 +1,44 @@
+---
+import Sprite from './Sprite.astro';
+
+const links = [
+  { href: '/#work', label: 'Work' },
+  { href: '/#about', label: 'About' },
+  { href: '/#contact', label: 'Contact' },
+];
+---
+
+<header class="hud">
+  <div class="hud__inner">
+    <a href="/" class="hud__tag t-label">
+      <span class="hud__tag-long">Player 01</span>
+      <span class="hud__tag-short" aria-hidden="true">P1</span>
+    </a>
+
+    <div class="xp" aria-hidden="true"><div class="xp__fill"></div></div>
+
+    <nav class="hud__nav" aria-label="Primary">
+      {
+        links.map((l) => (
+          <a href={l.href} class="hud__link t-label">
+            <Sprite name="arrow" />
+            {l.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <button type="button" class="pause" data-pause aria-pressed="false">
+      <span class="sr-only">Pause animations</span>
+      <svg class="pause__icon pause__icon--pause" viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true">
+        <rect x="1" y="1" width="2" height="5" fill="currentColor"></rect>
+        <rect x="4" y="1" width="2" height="5" fill="currentColor"></rect>
+      </svg>
+      <svg class="pause__icon pause__icon--play" viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true">
+        <rect x="2" y="1" width="1" height="5" fill="currentColor"></rect>
+        <rect x="3" y="2" width="1" height="3" fill="currentColor"></rect>
+        <rect x="4" y="3" width="1" height="1" fill="currentColor"></rect>
+      </svg>
+    </button>
+  </div>
+</header>

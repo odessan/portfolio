@@ -1,0 +1,85 @@
+---
+import Sprite from './Sprite.astro';
+import Window from './Window.astro';
+import profile from '../data/profile.json';
+
+// editable in the admin (Keystatic "Profile" singleton)
+const { name, greeting, role, mission, status, training, tools, skills } = profile;
+---
+
+<section id="about" class="section" aria-labelledby="player-title">
+  <div class="wrap hub" data-hub>
+    <svg class="hub__connectors" data-connectors aria-hidden="true"></svg>
+
+    <header class="section-head hub__head">
+      <h2 id="player-title" class="t-headline level">Level 02</h2>
+      <p class="t-title level-sub">Meet the player</p>
+      <p class="t-headline hub__name">{name}</p>
+    </header>
+
+    <div class="console-wrap" data-hub-center>
+      <div class="console" role="img" aria-label={`Pixel portrait of ${name} on a handheld console`}>
+        <div class="console__bezel">
+          <div class="console__screen ambient">
+            <Sprite name="star" class="twinkle console__star" style="left:12%;top:18%" />
+            <Sprite name="star" class="twinkle console__star" style="right:12%;top:40%;animation-delay:1.3s" />
+            <Sprite name="portrait" />
+          </div>
+        </div>
+        <div class="console__controls">
+          <Sprite name="dpad" />
+          <div class="console__grille"><span></span><span></span><span></span><span></span></div>
+          <div class="console__buttons">
+            <Sprite name="button" />
+            <Sprite name="button" class="console__button-b" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <Window title="hello.txt" label="Hello!!" class="hub__window hub__window--hello" data-hub-node>
+      {greeting && <p class="type" style={`--chars:${greeting.length}`}>{greeting}</p>}
+      <dl class="fields">
+        <div class="field"><dt class="t-label">Player</dt><dd>{name}</dd></div>
+        {role && <div class="field"><dt class="t-label">Role</dt><dd>{role}</dd></div>}
+        {mission && <div class="field"><dt class="t-label">Mission</dt><dd>{mission}</dd></div>}
+        {status && <div class="field"><dt class="t-label">Status</dt><dd>{status}</dd></div>}
+      </dl>
+    </Window>
+
+    <Window title="log.txt" label="Training log" class="hub__window hub__window--training" data-hub-node>
+      <dl class="fields">
+        {training.degree && <div class="field"><dt class="t-label">Degree</dt><dd>{training.degree}</dd></div>}
+        {training.school && <div class="field"><dt class="t-label">School</dt><dd>{training.school}</dd></div>}
+        {training.years && <div class="field"><dt class="t-label">Years</dt><dd>{training.years}</dd></div>}
+      </dl>
+    </Window>
+
+    <Window title="loadout.exe" label="Loadout" class="hub__window hub__window--loadout" data-hub-node>
+      <ul class="tools">
+        {
+          tools
+            .filter((t) => t.slug)
+            .map((t) => (
+              <li class="tool">
+                <img
+                  src={`https://cdn.simpleicons.org/${t.slug}/f8b8de`}
+                  alt={t.name}
+                  title={t.name}
+                  width="28"
+                  height="28"
+                  loading="lazy"
+                />
+              </li>
+            ))
+        }
+      </ul>
+    </Window>
+
+    <Window title="skills.dat" label="Skill tree" class="hub__window hub__window--skills" data-hub-node>
+      <ul class="chips">
+        {skills.filter(Boolean).map((s) => <li class="chip t-label">{s}</li>)}
+      </ul>
+    </Window>
+  </div>
+</section>

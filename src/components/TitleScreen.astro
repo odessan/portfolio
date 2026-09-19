@@ -1,0 +1,51 @@
+---
+import Sprite from './Sprite.astro';
+import Ground from './Ground.astro';
+import profile from '../data/profile.json';
+
+// scattered twinkle stars: [left %, top %, delay s]
+const stars: [number, number, number][] = [
+  [4, 30, 0],
+  [9, 62, 1.1],
+  [93, 22, 0.6],
+  [96, 55, 1.7],
+  [52, 12, 2.3],
+];
+---
+
+<section class="title" aria-labelledby="player-name">
+  <div class="title__sky ambient" aria-hidden="true">
+    <Sprite name="cloud" class="cloud" style="top:14%;animation-duration:110s;animation-delay:-40s" />
+    <Sprite name="cloud" class="cloud" style="top:6%;animation-duration:140s;animation-delay:-95s" />
+    <Sprite name="cloud" class="cloud" style="top:44%;animation-duration:95s;animation-delay:-10s" />
+    {
+      stars.map(([left, top, delay]) => (
+        <Sprite
+          name="star"
+          class="twinkle"
+          style={`position:absolute;left:${left}%;top:${top}%;animation-delay:${delay}s`}
+        />
+      ))
+    }
+  </div>
+
+  <div class="title__stage">
+    <div class="title__frame">
+      {profile.yearLine && <p class="t-headline title__year">{profile.yearLine}</p>}
+      <h1 id="player-name" class="t-display title__name">{profile.name}</h1>
+      <a href="#work" class="btn">
+        <Sprite name="arrow" class="blink" recolor={{ y: '#0b0a14' }} />
+        Press start
+      </a>
+    </div>
+
+    <div class="title__actors" aria-hidden="true">
+      <Sprite name="lamp" class="actor actor--lamp" />
+      <Sprite name="avatar" class="actor actor--avatar ambient bob" />
+      <Sprite name="cat" class="actor actor--pet ambient bob" style="animation-delay:-0.6s" />
+      <Sprite name="tree" class="actor actor--tree" />
+    </div>
+  </div>
+
+  <Ground />
+</section>

@@ -1,0 +1,1109 @@
+/* ============================================================
+   The After-Hours Arcade. Implements DESIGN.md.
+   ============================================================ */
+
+@import '@fontsource/silkscreen/700.css';
+@import '@fontsource-variable/pixelify-sans';
+@import '@fontsource-variable/geist-mono';
+
+/* ---- tokens ---- */
+:root {
+  --arcade-void: #0b0a14;
+  --console-shell: #17142b;
+  --star-dust: #3b3766;
+  --moonlight: #f1ecff;
+  --moonlight-dim: #aaa3d6;
+  --neon-magenta: #ff4fd8;
+  --magenta-chrome: #c2168f;
+  --berry-ink: #940d6e;
+  --bubblegum-window: #f8b8de;
+  --plum-ink: #3d0a31;
+  --phosphor-green: #3df08a;
+  --phosphor-shadow: #138046;
+  --coin-yellow: #ffe066;
+  --periwinkle-band: #4f51d4;
+
+  --font-display: Silkscreen, 'Pixelify Sans Variable', monospace;
+  --font-pixel: 'Pixelify Sans Variable', Silkscreen, monospace;
+  --font-body: 'Geist Mono Variable', ui-monospace, Menlo, monospace;
+
+  /* The Integer Pixel Rule: art-pixel size and pixel type sizes are fixed
+     integers that change only at breakpoints. No clamp(), no vw. */
+  --px: 3px;
+  --fs-display: 32px;
+  --fs-headline: 24px;
+  --fs-band: 24px;
+  --fs-title: 20px;
+  --fs-label: 14px;
+
+  --hud-h: 56px;
+  --band-h: 48px;
+  --gutter: 16px;
+  --section-y: 64px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --fs-display: 48px;
+    --fs-headline: 32px;
+    --fs-title: 24px;
+    --fs-label: 16px;
+    --gutter: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --px: 4px;
+    --fs-display: 64px;
+    --fs-headline: 40px;
+    --fs-band: 32px;
+    --band-h: 56px;
+    --gutter: 48px;
+    --section-y: 96px;
+  }
+}
+
+/* ---- reset ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
+  scroll-padding-top: calc(var(--hud-h) + 16px);
+}
+
+body {
+  margin: 0;
+  background: var(--arcade-void);
+  color: var(--moonlight);
+  font: 400 16px / 1.7 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+/* starfield: two offset dot grids on a fixed layer, never on scrolling boxes */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='2' height='2' fill='%233b3766'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect x='20' y='20' width='2' height='2' fill='%233b3766' opacity='.6'/%3E%3C/svg%3E");
+}
+
+h1,
+h2,
+h3,
+p,
+dl,
+dd,
+ul,
+ol {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: inherit;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: var(--neon-magenta);
+  color: var(--arcade-void);
+}
+
+:focus-visible {
+  outline: 4px solid var(--coin-yellow);
+  outline-offset: 4px;
+}
+
+/* ---- type roles ---- */
+.t-display,
+.t-headline,
+.t-band {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  -webkit-font-smoothing: none;
+}
+.t-display {
+  font-size: var(--fs-display);
+  line-height: 1.1;
+}
+.t-headline {
+  font-size: var(--fs-headline);
+  line-height: 1.1;
+}
+.t-band {
+  font-size: var(--fs-band);
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+.t-title,
+.t-label {
+  font-family: var(--font-pixel);
+  -webkit-font-smoothing: none;
+}
+.t-title {
+  font-size: var(--fs-title);
+  font-weight: 600;
+  line-height: 1.25;
+}
+.t-label {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+}
+
+/* ---- layout ---- */
+.wrap {
+  width: min(100% - var(--gutter) * 2, 1200px);
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: var(--section-y);
+}
+
+.section-head {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.level,
+.level-sub {
+  color: var(--neon-magenta);
+}
+
+/* ---- sprites ---- */
+.sprite {
+  width: calc(var(--w) * var(--px));
+  height: calc(var(--h) * var(--px));
+  flex: none;
+}
+
+.actor {
+  position: absolute;
+  bottom: 0;
+  z-index: 2;
+}
+
+/* ---- links ---- */
+.link {
+  color: var(--moonlight);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.link:hover {
+  color: var(--coin-yellow);
+}
+
+/* ---- buttons: pixel frame (notched corners) + zero-blur drop ---- */
+.btn {
+  --frame: var(--phosphor-green);
+  --drop: calc(var(--px) * 2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--px) * 2);
+  min-height: 48px;
+  margin: var(--px);
+  padding: 12px 32px;
+  border: 0;
+  background: var(--phosphor-green);
+  color: var(--arcade-void);
+  font: 600 var(--fs-title) / 1 var(--font-pixel);
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-font-smoothing: none;
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--frame),
+    calc(var(--px) * -1) 0 0 0 var(--frame),
+    var(--px) 0 0 0 var(--frame),
+    0 var(--px) 0 0 var(--frame),
+    0 var(--drop) 0 0 var(--phosphor-shadow);
+  transition:
+    transform 80ms steps(2),
+    box-shadow 80ms steps(2);
+}
+.btn:hover {
+  --drop: calc(var(--px) * 3);
+  transform: translateY(calc(var(--px) * -1));
+}
+.btn:active {
+  --drop: var(--px);
+  transform: translateY(var(--px));
+}
+.btn:focus-visible {
+  outline-offset: calc(var(--px) + 4px);
+}
+.btn--ghost {
+  background: var(--arcade-void);
+  color: var(--phosphor-green);
+}
+
+/* ---- ground strip ---- */
+.ground {
+  height: calc(var(--px) * 8);
+  background: var(--ground-tile) repeat-x 0 0 / calc(var(--px) * 8) calc(var(--px) * 8);
+  image-rendering: pixelated;
+}
+
+/* ---- marquee band ---- */
+.band {
+  height: var(--band-h);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--periwinkle-band);
+  border-top: var(--px) solid var(--phosphor-green);
+  color: var(--coin-yellow);
+}
+.band__track {
+  display: flex;
+  width: max-content;
+  animation: band 24s linear infinite;
+}
+.band:hover .band__track {
+  animation-play-state: paused;
+}
+.band__group {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding-right: 24px;
+}
+@keyframes band {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---- window panel ---- */
+.window {
+  background: var(--bubblegum-window);
+  color: var(--plum-ink);
+  border: var(--px) solid var(--magenta-chrome);
+}
+.window__bar {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 8px;
+  background: var(--magenta-chrome);
+  color: var(--moonlight);
+}
+.window__controls {
+  display: flex;
+  gap: 4px;
+}
+.window__controls span {
+  width: 12px;
+  height: 12px;
+  background: var(--bubblegum-window);
+  box-shadow: inset -2px -2px 0 var(--berry-ink);
+}
+.window__body {
+  padding: 16px;
+}
+.window__label {
+  width: fit-content;
+  margin: 0 auto 16px;
+  padding: 2px 12px;
+  background: var(--coin-yellow);
+  color: var(--plum-ink);
+  text-align: center;
+}
+@media (min-width: 1024px) {
+  .window__body {
+    padding: 24px;
+  }
+}
+
+/* window open wipe (added by game.ts only when motion is allowed) */
+html.wipe [data-window]:not(.is-open) {
+  clip-path: inset(0 0 100% 0);
+}
+html.wipe [data-window].is-open {
+  animation: wipe 320ms steps(8) both;
+}
+@keyframes wipe {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* typewriter: monospace, so each step reveals exactly one character */
+.type {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: top;
+}
+html.wipe .is-open .type {
+  width: 0;
+  animation: type calc(var(--chars) * 30ms) steps(var(--chars)) 320ms forwards;
+}
+@keyframes type {
+  to {
+    width: calc(var(--chars) * 1ch);
+  }
+}
+
+/* ---- fields + chips (inside windows) ---- */
+.fields {
+  display: grid;
+  gap: 12px;
+}
+.field dt {
+  color: var(--berry-ink);
+}
+.field dd {
+  margin: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+.chip {
+  padding: 4px 10px;
+  color: var(--berry-ink);
+  box-shadow: inset 0 0 0 2px var(--berry-ink);
+}
+
+/* ---- HUD ---- */
+.hud {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 100;
+  height: var(--hud-h);
+  background: var(--arcade-void);
+  border-bottom: var(--px) solid var(--star-dust);
+}
+.hud__inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-inline: var(--gutter);
+}
+.hud__tag {
+  color: var(--neon-magenta);
+  text-decoration: none;
+}
+.hud__tag-long {
+  display: none;
+}
+.hud__nav {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}
+.hud__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  color: var(--moonlight);
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.hud__link .sprite {
+  visibility: hidden;
+}
+.hud__link:hover,
+.hud__link:focus-visible {
+  color: var(--coin-yellow);
+}
+.hud__link:hover .sprite,
+.hud__link:focus-visible .sprite {
+  visibility: visible;
+}
+@media (max-width: 400px) {
+  .hud__link .sprite {
+    display: none;
+  }
+}
+
+.xp {
+  display: none;
+  width: 96px;
+  height: 12px;
+  box-shadow: 0 0 0 2px var(--moonlight-dim);
+}
+.xp__fill {
+  height: 100%;
+  background: var(--phosphor-green);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+@supports (animation-timeline: scroll()) {
+  .xp__fill {
+    animation: xp steps(24) both;
+    animation-timeline: scroll(root);
+  }
+}
+@keyframes xp {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.pause {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: var(--console-shell);
+  color: var(--moonlight);
+  cursor: pointer;
+}
+.pause:hover {
+  color: var(--coin-yellow);
+}
+.pause__icon {
+  width: 21px;
+  height: 21px;
+}
+.pause__icon--play,
+html[data-paused] .pause__icon--pause {
+  display: none;
+}
+html[data-paused] .pause__icon--play {
+  display: block;
+}
+
+@media (min-width: 640px) {
+  .hud__tag-long {
+    display: inline;
+  }
+  .hud__tag-short {
+    display: none;
+  }
+  .xp {
+    display: block;
+  }
+  .hud__nav {
+    gap: 24px;
+  }
+}
+
+.skip {
+  position: absolute;
+  left: 16px;
+  top: -100px;
+  z-index: 200;
+  padding: 8px 16px;
+  background: var(--coin-yellow);
+  color: var(--plum-ink);
+}
+.skip:focus {
+  top: 8px;
+}
+
+/* ---- title screen ---- */
+.title {
+  position: relative;
+  overflow: clip;
+  padding-top: calc(var(--hud-h) + 40px);
+}
+.title__sky {
+  position: absolute;
+  inset: var(--hud-h) 0 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.cloud {
+  position: absolute;
+  left: 0;
+  animation: drift 110s linear infinite;
+}
+@keyframes drift {
+  from {
+    transform: translateX(-40vw);
+  }
+  to {
+    transform: translateX(110vw);
+  }
+}
+.twinkle {
+  animation: twinkle 3s steps(1) infinite;
+}
+@keyframes twinkle {
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.title__stage {
+  position: relative;
+  padding-inline: var(--gutter);
+  /* padding, not the frame's margin: a margin would collapse through the
+     stage and the actors would stand on the frame instead of the ground */
+  padding-bottom: calc(var(--px) * 20);
+}
+.title__frame {
+  --frame: var(--phosphor-green);
+  position: relative;
+  z-index: 1;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 48px 16px 56px;
+  display: grid;
+  justify-items: center;
+  gap: 24px;
+  text-align: center;
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--frame),
+    calc(var(--px) * -1) 0 0 0 var(--frame),
+    var(--px) 0 0 0 var(--frame),
+    0 var(--px) 0 0 var(--frame);
+}
+.title__year {
+  color: var(--coin-yellow);
+}
+.title__name {
+  color: var(--neon-magenta);
+  text-shadow: var(--px) var(--px) 0 var(--phosphor-green);
+}
+/* actors track the frame's width so they overlap its corners on wide screens */
+.title__actors {
+  position: absolute;
+  inset: auto 0 0;
+  width: min(100%, 1040px);
+  height: 0;
+  margin-inline: auto;
+}
+.actor--avatar {
+  left: max(4%, 8px);
+}
+.actor--pet {
+  right: 10%;
+}
+.actor--lamp,
+.actor--tree {
+  display: none;
+}
+.bob {
+  animation: bob 1.2s steps(1) infinite;
+}
+@keyframes bob {
+  50% {
+    transform: translateY(calc(var(--px) * -1));
+  }
+}
+.blink {
+  animation: blink 1s steps(1) 3;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (min-width: 640px) {
+  .title__frame {
+    padding: 64px 32px 72px;
+  }
+  .actor--lamp {
+    display: block;
+    left: 3%;
+  }
+  .actor--avatar {
+    left: 12%;
+  }
+  .actor--tree {
+    display: block;
+    right: -2%;
+  }
+  .actor--pet {
+    right: 20%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .title__frame {
+    padding: 88px 32px 112px;
+  }
+}
+
+/* ---- mission select ---- */
+.missions {
+  display: grid;
+  gap: 24px;
+}
+.missions__menu {
+  display: grid;
+  gap: 24px;
+}
+.missions__list {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.missions__all {
+  justify-self: start;
+}
+/* phones and tablets get compact rows only; previews are a desktop affordance */
+.missions__panes {
+  display: none;
+}
+.mission-pane .window__body {
+  display: grid;
+  gap: 16px;
+}
+.mission-pane .window__label {
+  margin-bottom: 0;
+}
+.mission-pane__cover {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border: var(--px) solid var(--console-shell);
+  background: var(--console-shell);
+}
+.mission-pane__cta {
+  justify-self: start;
+}
+
+.mission-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background: var(--console-shell);
+  color: var(--moonlight);
+  text-decoration: none;
+}
+.mission-row .sprite {
+  visibility: hidden;
+}
+.mission-row__title {
+  min-width: 0;
+}
+.mission-row__meta {
+  flex: none;
+  margin-left: auto;
+  color: var(--moonlight-dim);
+  text-align: right;
+}
+.mission-row:hover,
+.mission-row:focus-visible {
+  background: var(--neon-magenta);
+  color: var(--arcade-void);
+}
+.mission-row:hover .mission-row__meta,
+.mission-row:focus-visible .mission-row__meta {
+  color: var(--arcade-void);
+}
+.mission-row:hover .sprite,
+.mission-row:focus-visible .sprite {
+  visibility: visible;
+}
+@media (max-width: 639px) {
+  .mission-row {
+    padding: 14px 16px;
+  }
+  /* no hover cursor on touch: reclaim the arrow's indent */
+  .mission-row .sprite {
+    display: none;
+  }
+  .mission-row--wide-meta .mission-row__meta {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .missions {
+    grid-template-columns: minmax(300px, 5fr) 7fr;
+    align-items: start;
+    gap: 48px;
+  }
+  /* "selected" only means something next to a preview window */
+  .mission-row.is-selected {
+    background: var(--neon-magenta);
+    color: var(--arcade-void);
+  }
+  .mission-row.is-selected .mission-row__meta {
+    color: var(--arcade-void);
+  }
+  .mission-row.is-selected .sprite {
+    visibility: visible;
+  }
+  .missions__panes {
+    display: block;
+    position: sticky;
+    top: calc(var(--hud-h) + 24px);
+  }
+  .mission-pane:not(.is-active) {
+    display: none;
+  }
+  /* the sticky preview has to fit under the HUD on a laptop screen */
+  .mission-pane__cover {
+    aspect-ratio: 2 / 1;
+  }
+}
+
+/* ---- player profile hub ---- */
+.hub {
+  position: relative;
+  display: grid;
+  gap: 24px;
+}
+.hub .section-head {
+  margin-bottom: 0;
+}
+.hub__name {
+  color: var(--phosphor-green);
+}
+.hub__connectors {
+  display: none;
+}
+.console-wrap {
+  justify-self: center;
+  padding: var(--px);
+}
+
+.console {
+  position: relative;
+  width: calc(72 * var(--px));
+  height: calc(82 * var(--px));
+  background: var(--neon-magenta);
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--magenta-chrome),
+    calc(var(--px) * -1) 0 0 0 var(--magenta-chrome),
+    var(--px) 0 0 0 var(--magenta-chrome),
+    0 var(--px) 0 0 var(--magenta-chrome);
+}
+.console__bezel {
+  position: absolute;
+  left: calc(6 * var(--px));
+  top: calc(6 * var(--px));
+  width: calc(60 * var(--px));
+  height: calc(44 * var(--px));
+  background: var(--console-shell);
+}
+.console__screen {
+  position: absolute;
+  inset: calc(4 * var(--px));
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--phosphor-shadow);
+}
+.console__star {
+  position: absolute;
+}
+.console__controls {
+  position: absolute;
+  left: calc(8 * var(--px));
+  right: calc(8 * var(--px));
+  top: calc(58 * var(--px));
+  height: calc(18 * var(--px));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.console__grille {
+  display: flex;
+  gap: calc(2 * var(--px));
+}
+.console__grille span {
+  width: calc(2 * var(--px));
+  height: calc(8 * var(--px));
+  background: var(--magenta-chrome);
+}
+.console__buttons {
+  display: flex;
+  gap: calc(2 * var(--px));
+}
+.console__button-b {
+  transform: translateY(calc(-3 * var(--px)));
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+.tool {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  background: var(--plum-ink);
+}
+
+@media (min-width: 640px) {
+  .hub {
+    grid-template-columns: 1fr 1fr;
+  }
+  .hub__head,
+  .console-wrap {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hub {
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas:
+      'head console hello'
+      'loadout training skills';
+    column-gap: 64px;
+    row-gap: 96px;
+    align-items: start;
+  }
+  .hub__head {
+    grid-area: head;
+  }
+  .console-wrap {
+    grid-area: console;
+  }
+  .hub__window--hello {
+    grid-area: hello;
+  }
+  .hub__window--loadout {
+    grid-area: loadout;
+  }
+  .hub__window--training {
+    grid-area: training;
+  }
+  .hub__window--skills {
+    grid-area: skills;
+  }
+  /* lines run center to center under everything; only the gaps show */
+  .hub__connectors {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    pointer-events: none;
+  }
+  .hub > :not(.hub__connectors) {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* ---- save point ---- */
+.save {
+  position: relative;
+  padding-top: var(--section-y);
+}
+.save__content {
+  display: grid;
+  gap: 24px;
+  justify-items: start;
+}
+.save__line {
+  max-width: 48ch;
+}
+.save__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 32px;
+}
+.save__scene {
+  position: relative;
+  height: calc(28 * var(--px));
+  margin-top: 48px;
+}
+.actor--flag {
+  left: 10%;
+}
+.actor--door {
+  right: 8%;
+}
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px 32px;
+  padding: 24px var(--gutter) 32px;
+  color: var(--moonlight-dim);
+}
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---- mission log (/missions) ---- */
+.archive {
+  padding-top: calc(var(--hud-h) + 32px);
+  padding-bottom: var(--section-y);
+}
+.archive__year {
+  max-width: 880px;
+}
+.archive__year + .archive__year {
+  margin-top: 32px;
+}
+.archive__year-title {
+  margin-bottom: 12px;
+  color: var(--coin-yellow);
+}
+
+/* ---- project page ---- */
+.project {
+  padding-top: calc(var(--hud-h) + 32px);
+  padding-bottom: var(--section-y);
+}
+.project__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-bottom: 16px;
+  color: var(--moonlight);
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.project__back:hover {
+  color: var(--coin-yellow);
+}
+.project__back-arrow {
+  transform: scaleX(-1);
+}
+.project__window .window__body {
+  display: grid;
+  gap: 24px;
+}
+.project__head {
+  display: grid;
+  gap: 12px;
+}
+.project__title {
+  color: var(--berry-ink);
+}
+.project__summary {
+  max-width: 60ch;
+}
+.project__cover {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border: var(--px) solid var(--console-shell);
+  background: var(--console-shell);
+}
+.project__facts {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px 24px;
+}
+.project__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+.project__window .link {
+  color: var(--berry-ink);
+}
+
+.prose {
+  max-width: 65ch;
+}
+.prose h2 {
+  margin: 32px 0 8px;
+  font: 600 var(--fs-title) / 1.25 var(--font-pixel);
+  color: var(--berry-ink);
+  -webkit-font-smoothing: none;
+}
+.prose h3 {
+  margin: 24px 0 4px;
+  font: 500 var(--fs-label) / 1.2 var(--font-pixel);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--berry-ink);
+  -webkit-font-smoothing: none;
+}
+.prose p,
+.prose li {
+  margin-block: 12px;
+}
+.prose ul {
+  padding-left: 20px;
+}
+.prose li::marker {
+  color: var(--berry-ink);
+}
+
+/* ---- utility ---- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- motion controls: HUD PAUSE and reduced motion ---- */
+html[data-paused] .ambient,
+html[data-paused] .ambient *,
+html[data-paused] .blink {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient,
+  .ambient *,
+  .blink {
+    animation: none !important;
+  }
+  .btn {
+    transition: none;
+  }
+}

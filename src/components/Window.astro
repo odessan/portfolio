@@ -1,0 +1,25 @@
+---
+interface Props {
+  /** Title bar text, e.g. "hello.txt". */
+  title: string;
+  /** Yellow label pill heading at the top of the body. */
+  label?: string;
+  level?: 2 | 3;
+  class?: string;
+  [attr: `data-${string}`]: string | boolean | undefined;
+}
+
+const { title, label, level = 3, class: className, ...attrs } = Astro.props;
+const Heading = `h${level}` as 'h2' | 'h3';
+---
+
+<div class:list={['window', className]} data-window {...attrs}>
+  <div class="window__bar">
+    <span class="t-label">{title}</span>
+    <span class="window__controls" aria-hidden="true"><span></span><span></span><span></span></span>
+  </div>
+  <div class="window__body">
+    {label && <Heading class="window__label t-label">{label}</Heading>}
+    <slot />
+  </div>
+</div>

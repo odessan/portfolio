@@ -1,0 +1,28 @@
+---
+import Sprite from './Sprite.astro';
+
+interface Props {
+  slug: string;
+  title: string;
+  /** Right-aligned detail: the year on the homepage, the stack on /missions. */
+  meta: string | number;
+  /** Starts highlighted (desktop Mission Select only). */
+  selected?: boolean;
+  /** Hovering or focusing the row updates the preview window. */
+  preview?: boolean;
+  /** Long meta text that should drop on phones. */
+  wideMeta?: boolean;
+}
+
+const { slug, title, meta, selected = false, preview = false, wideMeta = false } = Astro.props;
+---
+
+<a
+  href={`/projects/${slug}`}
+  class:list={['mission-row t-title', selected && 'is-selected', wideMeta && 'mission-row--wide-meta']}
+  data-mission-row={preview ? slug : undefined}
+>
+  <Sprite name="arrow" recolor={{ y: '#0b0a14' }} />
+  <span class="mission-row__title">{title}</span>
+  <span class="mission-row__meta t-label">{meta}</span>
+</a>

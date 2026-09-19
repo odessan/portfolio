@@ -1,0 +1,67 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Sprite from '../../components/Sprite.astro';
+import Window from '../../components/Window.astro';
+import profile from '../../data/profile.json';
+
+export async function getStaticPaths() {
+  const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+  return projects.map((project, index) => ({
+    params: { slug: project.id },
+    props: { project, index },
+  }));
+}
+
+const { project, index } = Astro.props;
+const { Content } = await render(project);
+const { title, summary, year, role, stack, link, repo, cover } = project.data;
+const src = cover ?? `https://picsum.photos/seed/${project.id}-cover/1600/1000`;
+---
+
+<Base title={`${title}, ${profile.name}`} description={summary}>
+  <main id="main" class="project wrap">
+    <a href="/#work" class="project__back t-label">
+      <Sprite name="arrow" class="project__back-arrow" />
+      Back to missions
+    </a>
+
+    <Window title={`Mission ${String(index + 1).padStart(2, '0')}`} class="project__window">
+      <header class="project__head">
+        <h1 class="t-headline project__title">{title}</h1>
+        <p class="project__summary">{summary}</p>
+      </header>
+
+      <img class="project__cover" src={src} alt="" width="1600" height="1000" fetchpriority="high" decoding="async" />
+
+      <dl class="fields project__facts">
+        <div class="field"><dt class="t-label">Year</dt><dd>{year}</dd></div>
+        <div class="field"><dt class="t-label">Role</dt><dd>{role}</dd></div>
+        <div class="field"><dt class="t-label">Stack</dt><dd>{stack.join(', ')}</dd></div>
+        {
+          (link || repo) && (
+            <div class="field">
+              <dt class="t-label">Links</dt>
+              <dd class="project__links">
+                {link && (
+                  <a href={link} class="link" target="_blank" rel="noopener noreferrer">
+                    Live site
+                  </a>
+                )}
+                {repo && (
+                  <a href={repo} class="link" target="_blank" rel="noopener noreferrer">
+                    Source
+                  </a>
+                )}
+              </dd>
+            </div>
+          )
+        }
+      </dl>
+
+      <div class="prose">
+        <Content />
+      </div>
+    </Window>
+  </main>
+</Base>

@@ -1,0 +1,80 @@
+---
+import { getCollection } from 'astro:content';
+import MissionRow from './MissionRow.astro';
+import Window from './Window.astro';
+
+const FEATURED_LIMIT = 5;
+
+const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const flagged = all.filter((p) => p.data.featured);
+// nothing flagged yet: fall back to the first few by order
+const shown = (flagged.length ? flagged : all).slice(0, FEATURED_LIMIT);
+const hasMore = all.length > shown.length;
+
+// numbered by position in the full list, so it matches the project page
+const missionNumber = (id: string) =>
+  String(all.findIndex((p) => p.id === id) + 1).padStart(2, '0');
+---
+
+<section id="work" class="section" aria-labelledby="missions-title">
+  <div class="wrap">
+    <header class="section-head">
+      <h2 id="missions-title" class="t-headline level">Level 01</h2>
+      <p class="t-title level-sub">Mission select</p>
+    </header>
+
+    <div class="missions" data-missions>
+      <div class="missions__menu">
+        <ol class="missions__list">
+          {
+            shown.map((p, i) => (
+              <li>
+                <MissionRow slug={p.id} title={p.data.title} meta={p.data.year} selected={i === 0} preview />
+              </li>
+            ))
+          }
+        </ol>
+        {
+          hasMore && (
+            <a href="/missions" class="btn btn--ghost missions__all">
+              View all missions ({all.length})
+            </a>
+          )
+        }
+      </div>
+
+      <div class="missions__panes">
+        {
+          shown.map((p, i) => (
+            <Window
+              title={`Mission ${missionNumber(p.id)}`}
+              label={p.data.title}
+              class={i === 0 ? 'mission-pane is-active' : 'mission-pane'}
+              data-mission-pane={p.id}
+            >
+              {/* TODO: replace picsum placeholders with real project screenshots */}
+              <img
+                class="mission-pane__cover"
+                src={p.data.cover ?? `https://picsum.photos/seed/${p.id}-cover/1200/750`}
+                alt=""
+                width="1200"
+                height="750"
+                loading={i === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+              />
+              <p>{p.data.summary}</p>
+              <ul class="chips">
+                {p.data.stack.slice(0, 4).map((s) => (
+                  <li class="chip t-label">{s}</li>
+                ))}
+              </ul>
+              <a href={`/projects/${p.id}`} class="btn mission-pane__cta">
+                Enter mission<span class="sr-only">: {p.data.title}</span>
+              </a>
+            </Window>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

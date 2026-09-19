@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Sprite from '../components/Sprite.astro';
+import MissionRow from '../components/MissionRow.astro';
+import profile from '../data/profile.json';
+
+// newest year first, then the usual order inside each year
+const all = (await getCollection('projects')).sort(
+  (a, b) => b.data.year - a.data.year || a.data.order - b.data.order
+);
+const years = [...new Set(all.map((p) => p.data.year))];
+const count = `${all.length} mission${all.length === 1 ? '' : 's'}`;
+---
+
+<Base title={`All missions, ${profile.name}`} description={`Every project by ${profile.name}: ${count}.`}>
+  <main id="main" class="archive wrap">
+    <a href="/#work" class="project__back t-label">
+      <Sprite name="arrow" class="project__back-arrow" />
+      Back to mission select
+    </a>
+
+    <header class="section-head">
+      <h1 class="t-headline level">Mission log</h1>
+      <p class="t-title level-sub">All {count}</p>
+    </header>
+
+    {
+      years.map((year) => (
+        <section class="archive__year" aria-labelledby={`year-${year}`}>
+          <h2 id={`year-${year}`} class="t-title archive__year-title">
+            {year}
+          </h2>
+          <ol class="missions__list">
+            {all
+              .filter((p) => p.data.year === year)
+              .map((p) => (
+                <li>
+                  <MissionRow slug={p.id} title={p.data.title} meta={p.data.stack.slice(0, 2).join(', ')} wideMeta />
+                </li>
+              ))}
+          </ol>
+        </section>
+      ))
+    }
+  </main>
+</Base>

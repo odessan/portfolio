@@ -1,0 +1,28 @@
+---
+import Sprite from './Sprite.astro';
+
+interface Props {
+  label: string;
+}
+
+const { label } = Astro.props;
+const repeats = Array.from({ length: 6 });
+---
+
+<!-- decorative divider: the section headline that follows carries the name -->
+<div class="band ambient" aria-hidden="true">
+  <div class="band__track">
+    {
+      [0, 1].map(() => (
+        <div class="band__group">
+          {repeats.map(() => (
+            <Fragment>
+              <span class="t-band">{label}</span>
+              <Sprite name="star" />
+            </Fragment>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+</div>

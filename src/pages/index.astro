@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import TitleScreen from '../components/TitleScreen.astro';
+import Band from '../components/Band.astro';
+import MissionSelect from '../components/MissionSelect.astro';
+import PlayerProfile from '../components/PlayerProfile.astro';
+import SavePoint from '../components/SavePoint.astro';
+import profile from '../data/profile.json';
+---
+
+<Base title={`${profile.name}, ${profile.role}`}>
+  <main id="main">
+    <TitleScreen />
+    <Band label="Missions" />
+    <MissionSelect />
+    <Band label="Player" />
+    <PlayerProfile />
+    <Band label="Continue?" />
+    <SavePoint />
+  </main>
+</Base>

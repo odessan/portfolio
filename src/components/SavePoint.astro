@@ -1,0 +1,49 @@
+---
+import Sprite from './Sprite.astro';
+import Ground from './Ground.astro';
+
+import profile from '../data/profile.json';
+
+// editable in the admin (Keystatic "Profile" singleton)
+const { name, email } = profile;
+const socials = profile.socials.filter((s) => s.label && s.href);
+const year = new Date().getFullYear();
+---
+
+<section id="contact" class="save" aria-labelledby="save-title">
+  <div class="wrap save__content">
+    <h2 id="save-title" class="t-headline level">Continue?</h2>
+    <p class="save__line">Have something worth building? My inbox is open.</p>
+    <div class="save__actions">
+      <a href={`mailto:${email}`} class="btn">Say hello</a>
+      <a href={`mailto:${email}`} class="link">{email}</a>
+    </div>
+  </div>
+
+  <div class="save__scene" aria-hidden="true">
+    <Sprite name="flag" class="actor actor--flag" />
+    <div class="ambient">
+      <Sprite name="gem" class="actor twinkle" style="left:32%;bottom:calc(10 * var(--px))" />
+      <Sprite name="gem" class="actor twinkle" style="left:48%;bottom:calc(16 * var(--px));animation-delay:1s" />
+      <Sprite name="gem" class="actor twinkle" style="left:64%;bottom:calc(8 * var(--px));animation-delay:2s" />
+    </div>
+    <Sprite name="door" class="actor actor--door" />
+  </div>
+  <Ground />
+
+  <footer class="footer t-label">
+    <span>© {year} {name}</span>
+    <ul class="footer__links">
+      {
+        socials.map((s) => (
+          <li>
+            <a href={s.href} class="link" target="_blank" rel="noopener noreferrer">
+              {s.label}
+            </a>
+          </li>
+        ))
+      }
+      <li><a href="#main" class="link">Back to top</a></li>
+    </ul>
+  </footer>
+</section>
