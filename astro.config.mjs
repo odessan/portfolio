@@ -21,6 +21,5 @@ export default defineConfig({
     },
   },
   prefetch: { prefetchAll: true },
-  // set to your production URL before deploying
-  site: 'https://example.com',
+  site: 'https://portfolio-rho-khaki.vercel.app',
 });
