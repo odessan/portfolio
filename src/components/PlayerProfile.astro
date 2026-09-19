@@ -4,7 +4,7 @@ import Window from './Window.astro';
 import profile from '../data/profile.json';
 
 // editable in the admin (Keystatic "Profile" singleton)
-const { name, greeting, role, mission, status, training, tools, skills } = profile;
+const { name, greeting, role, mission, status, tools, skills } = profile;
 ---
 
 <section id="about" class="section" aria-labelledby="player-title">
@@ -47,13 +47,6 @@ const { name, greeting, role, mission, status, training, tools, skills } = profi
       </dl>
     </Window>
 
-    <Window title="log.txt" label="Training log" class="hub__window hub__window--training" data-hub-node>
-      <dl class="fields">
-        {training.degree && <div class="field"><dt class="t-label">Degree</dt><dd>{training.degree}</dd></div>}
-        {training.school && <div class="field"><dt class="t-label">School</dt><dd>{training.school}</dd></div>}
-        {training.years && <div class="field"><dt class="t-label">Years</dt><dd>{training.years}</dd></div>}
-      </dl>
-    </Window>
 
     <Window title="loadout.exe" label="Loadout" class="hub__window hub__window--loadout" data-hub-node>
       <ul class="tools">

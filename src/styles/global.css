@@ -883,7 +883,8 @@ html[data-paused] .pause__icon--play {
     grid-template-columns: 1fr 1fr;
   }
   .hub__head,
-  .console-wrap {
+  .console-wrap,
+  .hub__window--skills {
     grid-column: 1 / -1;
   }
 }
@@ -893,7 +894,7 @@ html[data-paused] .pause__icon--play {
     grid-template-columns: 1fr auto 1fr;
     grid-template-areas:
       'head console hello'
-      'loadout training skills';
+      'loadout skills skills';
     column-gap: 64px;
     row-gap: 96px;
     align-items: start;
@@ -909,9 +910,6 @@ html[data-paused] .pause__icon--play {
   }
   .hub__window--loadout {
     grid-area: loadout;
-  }
-  .hub__window--training {
-    grid-area: training;
   }
   .hub__window--skills {
     grid-area: skills;
