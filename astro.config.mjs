@@ -21,5 +21,5 @@ export default defineConfig({
     },
   },
   prefetch: { prefetchAll: true },
-  site: 'https://portfolio-rho-khaki.vercel.app',
+  site: 'https://portfolio-rho-khaki-rqp9hckq00.vercel.app',
 });
